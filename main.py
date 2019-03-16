@@ -91,14 +91,14 @@ def temporalIntensity(dir):
     return I
 
 def backgroundSubtraction():
-    I = temporalIntensity('images/Photos/')
+    I = temporalIntensity('images/set2/')
     M = temporalMedian(I)
     f = integerFunction(I,M)
     lambda_k = alphaMetricallyTrimmedMean(I,f)
 
     imageio.imwrite("test.jpg", lambda_k)
 
-    I = temporalIntensity('images/Photos/')
+    I = temporalIntensity('images/set2/')
     M = temporalMedian(I)
     f = integerFunction(I,M)
     lambda_k = alphaMetricallyTrimmedMean(I,f)

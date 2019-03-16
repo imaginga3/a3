@@ -1,5 +1,5 @@
 import PIL as PIL
-from PIL import Image
+from PIL import Image,ImageTk
 import numpy as np
 from Tkinter import *
 
@@ -60,12 +60,14 @@ class GUI(Frame):
 		self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
 
 		self.rect = None
-
 		self.start_x = None
 		self.start_y = None
 
 		self.im = PIL.Image.open("20190315180957_IMG_0190.jpg")
- 
+		self.wazil,self.lard=self.im.size
+		self.canvas.config(scrollregion=(0,0,self.wazil,self.lard))
+		self.tk_im = ImageTk.PhotoImage(self.im)
+		self.canvas.create_image(0,0,anchor="nw",image=self.tk_im)  
 
 if __name__ == "__main__":
     root=Tk()

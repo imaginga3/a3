@@ -1,9 +1,7 @@
-from moving import removeMovingObjects, newRemoveMovingObjects
+# from moving import newRemoveMovingObjects
+from backgroundReconstruction import iterativeMedianBlending
 def main():
-    # removeMovingObjects("images/set2/","set2.jpg")
-    # removeMovingObjects("images/set1/","set1.jpg")
-    newRemoveMovingObjects("images/set1/","set1.jpg")
-    newRemoveMovingObjects("images/set2/","set2.jpg")
-    newRemoveMovingObjects("images/set3/","set3.jpg")
+    iterativeMedianBlending("images/set1/","set1.jpg")
+    iterativeMedianBlending("images/set2/","set2.jpg")
 if __name__ == "__main__":
     main()

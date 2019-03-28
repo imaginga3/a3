@@ -3,6 +3,7 @@ from PIL import Image
 from PIL import ImageTk
 import numpy as np
 from Tkinter import *
+import still
 
 # Based upon Resource:
 # https://stackoverflow.com/questions/29789554/tkinter-draw-rectangle-using-a-mouse
@@ -42,7 +43,15 @@ class GUI(Frame):
 		pass
 
 	def removeDefect(self):
-		pass
+		# [x1, y1, x2, y2]
+		rect = np.array(self.canvas.coords(self.rect), copy=True)
+		rect[0] = np.clip(rect[0], a_min=0, a_max=self.width) # x1
+		rect[1] = np.clip(rect[1], a_min=0, a_max=self.height) # y1
+		rect[2] = np.clip(rect[2], a_min=0, a_max=self.width) # x2
+		rect[3] = np.clip(rect[3], a_min=0, a_max=self.height) # y2
+		# print rect
+		# self.canvas.create_rectangle(rect[0], rect[1], rect[2], rect[3], outline='black', fill='black')
+		# still.function(rect)
 
 	def finished(self):
 		pass
@@ -50,7 +59,9 @@ class GUI(Frame):
 	def __init__(self,master):
 		Frame.__init__(self,master=None)
 		self.x = self.y = 0
-		self.canvas = Canvas(self,cursor="cross",width=800,height=500,confine=True)
+		self.width = 800
+		self.height = 500
+		self.canvas = Canvas(self,cursor="cross",width=self.width,height=self.height,confine=True)
 
 		#buttons
 		self.removeButton = Button(self,text='Remove',command=self.removeDefect)

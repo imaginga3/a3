@@ -11,3 +11,8 @@ opencv2
 os
 math
 Tkinter
+scipyss
+
+By:
+rscott10
+dgordo3

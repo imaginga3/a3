@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from skimage import filters
 def fillPatch(I,object_region,region,k):
     Xmin = np.max([0,region[0]-k])
     Xmax = np.min([I.shape[1],region[2]+k])
@@ -73,7 +74,6 @@ def fill(conf_level,source_region,object_region,kernel):
     fill[:,:,1] = np.multiply(fill[:,:,1],mask)
     fill[:,:,2] = np.multiply(fill[:,:,2],mask)
     # Add the fill to the subregion
-    print [I_sub_min,I_sub_max,J_sub_min,J_sub_max]
     pixel_region[I_min:I_max,J_min:J_max,:] = np.add(pixel_region[I_min:I_max,J_min:J_max,:],fill)
     pixel_source[I_min:I_max,J_min:J_max] = 1
     # Add subregion to the overall region
@@ -86,16 +86,37 @@ def fill(conf_level,source_region,object_region,kernel):
     # source_region[I_min:I_max,J_min:J_max] = 1
     return source_region,object_region
 def confidence(target_region,source_region,kernel):
+    temp = np.array(source_region,dtype=np.float32)
+    border = cv2.Laplacian(temp,cv2.CV_32F)
+    border = np.multiply(border,255)
+    border_pixels = np.where(border > 0)
     c_p = np.zeros((source_region.shape[0],source_region.shape[1]), dtype=np.float32)
+    rc_p = np.zeros((source_region.shape[0],source_region.shape[1]), dtype=np.float32)
+    target_gray = cv2.cvtColor(target_region,cv2.COLOR_RGB2GRAY)
+    d_p = filters.sobel(target_gray)
     k = kernel / 2
-    for i in xrange(source_region.shape[0]):
-        for j in xrange(source_region.shape[1]):
-            if source_region[i][j] == 0:
-                window = source_region[np.max([0,i-k]):np.min([source_region.shape[0],i+k]), np.max([0,j-k]):np.min([source_region.shape[1],j+k])]
-                sum = np.sum(window)
-                total = window.shape[0] * window.shape[1]
-                c_p[i][j] = sum / float(total)
-    return c_p
+    omega = 0.5
+    for i in xrange(border_pixels[0].shape[0]):
+        window = source_region[np.max([0,border_pixels[0][i]-k]):np.min([source_region.shape[0],border_pixels[0][i]+k]), np.max([0,border_pixels[1][i]-k]):np.min([source_region.shape[1],border_pixels[1][i]+k])]
+        sum = np.sum(window)
+        total = window.shape[0] * window.shape[1]
+        c_p[border_pixels[0][i]][border_pixels[1][i]] = sum / float(total)
+        rc_p[border_pixels[0][i]][border_pixels[1][i]] = ((1-omega)*c_p[border_pixels[0][i]][border_pixels[1][i]]) + omega
+    # for i in xrange(source_region.shape[0]):
+    #     for j in xrange(source_region.shape[1]):
+    #         if source_region[i][j] == 0:
+    #             window = source_region[np.max([0,i-k]):np.min([source_region.shape[0],i+k]), np.max([0,j-k]):np.min([source_region.shape[1],j+k])]
+    #             sum = np.sum(window)
+    #             total = window.shape[0] * window.shape[1]
+    #             c_p[i][j] = sum / float(total)
+    #             rc_p[i][j] = ((1-omega)*c_p[i][j]) + omega
+    alpha = 0.7
+    beta = 0.3
+    t1 = np.multiply(rc_p,alpha)
+    t2 = np.multiply(d_p,beta)
+    p_p = np.add(t1,t2)
+    # p_p = np.multiply(c_p,d_p)
+    return p_p
 def patch(img,region,k):
     object_region = np.array(img, copy=True)
     object_region[region[1]:region[3],region[0]:region[2],:] = 0
@@ -125,10 +146,10 @@ def removeStillObject(img,region,output):
         conf_level = confidence(object_region,source_region,kernel)
         source_region,object_region = fill(conf_level,source_region,object_region,kernel)
         done = isComplete(source_region)
-        cv2.imwrite("fill.jpg",object_region)
         temp = np.multiply(source_region,255)
-        cv2.imwrite("source.jpg",temp)
     I = fillPatch(I,object_region,region,k)
-    cv2.imwrite("images/stillResults/final.jpg",I)
+    cv2.imwrite(output,I)
 # removeStillObject("images/still/5-ball_small.jpg",[150,160,225,270],"images/stillResults/5-ball-final.jpg")
-removeStillObject("images/still/20190317153942_IMG_0234.jpg",[11,230,33,244],"images/stillResults/couch-final.jpg")
+removeStillObject("images/still/20190317153942_IMG_0234.jpg",[11,230,33,244],"images/stillResults/couch-hand.jpg")
+removeStillObject("images/stillResults/couch-hand.jpg",[119,318,133,339],"images/stillResults/couch-can1.jpg")
+removeStillObject("images/stillResults/couch-can1.jpg",[54,301,64,314],"images/stillResults/couch-can2.jpg")

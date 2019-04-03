@@ -19,5 +19,5 @@ A3-Removing People from holiday snaps
 2. You must have a folder of 5 images of the same scene over time
 
 # Running the Program #
-Type 'python gui.py "images/frames_folder/" "images/output_folder/output.jpg"'
+Type 'python gui.py "images/frames_folder/" "images/output_folder/output.jpg"'  
 Where, "images/frames_folder/" refers to a folder which contain images from the same scene over time, and "images/output_folder/output.jpg" refers to the output folder you want to save the image in and "image.jpg" is the name of the output of the image you wish to save

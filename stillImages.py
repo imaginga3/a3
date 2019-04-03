@@ -140,6 +140,7 @@ def removeStillObject(img,region,output):
     I = cv2.imread(img)
     kernel = 7
     k = 20
+    print region
     source_region,object_region = patch(I,region,k)
     done = False
     while done == False:
@@ -148,6 +149,6 @@ def removeStillObject(img,region,output):
         done = isComplete(source_region)
     I = fillPatch(I,object_region,region,k)
     cv2.imwrite(output,I)
-removeStillObject("images/still/20190317153942_IMG_0234.jpg",[11,230,33,244],"images/stillResults/couch-hand.jpg")
-removeStillObject("images/stillResults/couch-hand.jpg",[119,318,133,339],"images/stillResults/couch-can1.jpg")
-removeStillObject("images/stillResults/couch-can1.jpg",[54,301,64,314],"images/stillResults/couch-can2.jpg")
+# removeStillObject("images/still/20190317153942_IMG_0234.jpg",[11,230,33,244],"images/stillResults/couch-hand.jpg")
+# removeStillObject("images/stillResults/couch-hand.jpg",[119,318,133,339],"images/stillResults/couch-can1.jpg")
+# removeStillObject("images/stillResults/couch-can1.jpg",[54,301,64,314],"images/stillResults/couch-can2.jpg")

@@ -139,17 +139,15 @@ def isComplete(source_region):
 def removeStillObject(img,region,output):
     I = cv2.imread(img)
     kernel = 7
-    k = 50
+    k = 20
     source_region,object_region = patch(I,region,k)
     done = False
     while done == False:
         conf_level = confidence(object_region,source_region,kernel)
         source_region,object_region = fill(conf_level,source_region,object_region,kernel)
         done = isComplete(source_region)
-        temp = np.multiply(source_region,255)
     I = fillPatch(I,object_region,region,k)
     cv2.imwrite(output,I)
-# removeStillObject("images/still/5-ball_small.jpg",[150,160,225,270],"images/stillResults/5-ball-final.jpg")
 removeStillObject("images/still/20190317153942_IMG_0234.jpg",[11,230,33,244],"images/stillResults/couch-hand.jpg")
 removeStillObject("images/stillResults/couch-hand.jpg",[119,318,133,339],"images/stillResults/couch-can1.jpg")
 removeStillObject("images/stillResults/couch-can1.jpg",[54,301,64,314],"images/stillResults/couch-can2.jpg")
